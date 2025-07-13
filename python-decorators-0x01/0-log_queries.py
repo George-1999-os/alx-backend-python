@@ -1,17 +1,14 @@
+
 #!/usr/bin/env python3
 import sqlite3
 import functools
 
-# Decorator to log SQL queries
+# ✅ Decorator to log SQL queries
 def log_queries(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        if args:
-            print(f"[LOG] Executing query: {args[0]}")
-        elif 'query' in kwargs:
-            print(f"[LOG] Executing query: {kwargs['query']}")
-        else:
-            print("[LOG] No query found to log.")
+        query = kwargs.get("query") or (args[0] if args else "")
+        print(f"Executing SQL query: {query}")
         return func(*args, **kwargs)
     return wrapper
 
@@ -24,7 +21,6 @@ def fetch_all_users(query):
     conn.close()
     return results
 
-# Example usage
-if __name__ == "__main__":
-    users = fetch_all_users(query="SELECT * FROM users")
-    print(users)
+# ✅ Test the function
+users = fetch_all_users(query="SELECT * FROM users")
+print(users)
