@@ -1,25 +1,45 @@
 
+#!/usr/bin/env python3
 import sqlite3
 import functools
 
-def log_queries(func):
+query_cache = {}
+
+# Decorator to open/close DB connection
+def with_db_connection(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        query = kwargs.get('query') or (args[0] if args else None)
-        if query:
-            print(f"Executing SQL query: {query}")
-        return func(*args, **kwargs)
+        conn = sqlite3.connect("users.db")
+        try:
+            return func(conn, *args, **kwargs)
+        finally:
+            conn.close()
     return wrapper
 
-@log_queries
-def fetch_all_users(query):
-    conn = sqlite3.connect('users.db')
+# Decorator to cache query results
+def cache_query(func):
+    @functools.wraps(func)
+    def wrapper(conn, query):
+        if query in query_cache:
+            print("Using cached result for:", query)
+            return query_cache[query]
+        print("Executing and caching:", query)
+        result = func(conn, query)
+        query_cache[query] = result
+        return result
+    return wrapper
+
+@with_db_connection
+@cache_query
+def fetch_users_with_cache(conn, query):
     cursor = conn.cursor()
     cursor.execute(query)
-    results = cursor.fetchall()
-    conn.close()
-    return results
+    return cursor.fetchall()
 
-# Run this to test the decorator
-users = fetch_all_users(query="SELECT * FROM users")
+# Test
+users = fetch_users_with_cache(query="SELECT * FROM users")
 print(users)
+
+# Second call to test cache
+users_again = fetch_users_with_cache(query="SELECT * FROM users")
+print(users_again)
