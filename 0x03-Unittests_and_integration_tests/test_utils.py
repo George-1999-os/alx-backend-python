@@ -9,7 +9,7 @@ from utils import access_nested_map
 class TestAccessNestedMap(unittest.TestCase):
     """TestCase for access_nested_map function in utils.py"""
 
-    @parameterized.expand([
+    parameterized.expand([
         ({"a": 1}, ("a",), 1),
         ({"a": {"b": 2}}, ("a",), {"b": 2}),
         ({"a": {"b": 2}}, ("a", "b"), 2),
@@ -18,7 +18,7 @@ class TestAccessNestedMap(unittest.TestCase):
         """Test correct access to values in nested dictionaries"""
         self.assertEqual(access_nested_map(nested_map, path), expected)
 
-    @parameterized.expand([
+    parameterized.expand([
         ({}, ("a",), KeyError),
         ({"a": 1}, ("a", "b"), TypeError),
     ])
