@@ -4,11 +4,12 @@
 from typing import Mapping, Any, Sequence
 import requests
 
-
-def access_nested_map(nested_map: Mapping, path: Sequence) -> Any:
-    """Access a nested map using a sequence of keys."""
+def access_nested_map(nested_map, path):
     for key in path:
-        nested_map = nested_map[key]
+        if isinstance(nested_map, dict) and key in nested_map:
+            nested_map = nested_map[key]
+        else:
+            raise KeyError(key)
     return nested_map
 
 
