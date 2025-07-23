@@ -1,33 +1,33 @@
-##!/usr/bin/env python3
-"""Client module"""
+#!/usr/bin/env python3
+# client.py
 
 import requests
-from typing import Dict, List
-from utils import get_json  # this line is crucial
 
 
 class GithubOrgClient:
-    """GitHub organization client"""
-
-    ORG_URL = "https://api.github.com/orgs/{}"
+    """GitHub Organization Client"""
 
     def __init__(self, org_name):
-        """Initialize with organization name"""
         self.org_name = org_name
-        self._public_repos_url = f"https://api.github.com/orgs/{org_name}/repos"
+
+    def org(self):
+        """Fetch organization information"""
+        url = f"https://api.github.com/orgs/{self.org_name}"
+        return requests.get(url).json()
 
     @property
-    def org(self):
-        """Fetch and return organization info"""
-        return get_json(self.ORG_URL.format(self.org_name))
+    def _public_repos_url(self):
+        """Fetch URL to list public repos"""
+        return self.org().get("repos_url")
 
     def public_repos(self, license=None):
-        """Return public repo names, filtered by license if provided"""
-        repos = get_json(self._public_repos_url)
-        if license is None:
-            return [repo["name"] for repo in repos]
-        return [
+        """List public repo names, optionally filtered by license"""
+        repos = requests.get(self._public_repos_url).json()
+        repo_names = [
             repo["name"]
             for repo in repos
-            if repo.get("license", {}).get("key") == license
+            if license is None or (
+                repo.get("license") and repo["license"].get("key") == license
+            )
         ]
+        return repo_names
