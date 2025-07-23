@@ -44,15 +44,15 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Start patcher and set up mock responses"""
+        """Start patcher and define fixture response"""
         cls.get_patcher = patch('requests.get')
         cls.mock_get = cls.get_patcher.start()
 
         def side_effect(url):
             mock_response = Mock()
-            if url == f"https://api.github.com/orgs/google":
+            if url.endswith("/orgs/google"):
                 mock_response.json.return_value = cls.org_payload
-            elif url == f"https://api.github.com/orgs/google/repos":
+            elif url.endswith("/orgs/google/repos"):
                 mock_response.json.return_value = cls.repos_payload
             else:
                 mock_response.json.return_value = {}
@@ -66,11 +66,11 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         cls.get_patcher.stop()
 
     def test_public_repos(self):
-        """Test public_repos returns expected repo names"""
+        """Test public_repos without license filter"""
         client = GithubOrgClient("google")
         self.assertEqual(client.public_repos(), self.expected_repos)
 
     def test_public_repos_with_license(self):
-        """Test public_repos filters by apache-2.0 license"""
+        """Test public_repos with license='apache-2.0'"""
         client = GithubOrgClient("google")
         self.assertEqual(client.public_repos(license="apache-2.0"), self.apache2_repos)
