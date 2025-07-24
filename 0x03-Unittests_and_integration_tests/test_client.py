@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-from unittest import TestCase
+import unittest
 from unittest.mock import patch
 from parameterized import parameterized_class
-
 from client import GithubOrgClient
 from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
 
@@ -13,7 +12,8 @@ from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
     "expected_repos": expected_repos,
     "apache2_repos": apache2_repos
 }])
-class TestIntegrationGithubOrgClient(TestCase):
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         cls.get_patcher = patch('requests.get')
