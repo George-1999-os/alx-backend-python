@@ -30,4 +30,4 @@ class GithubOrgClient:
                 repo.get("license") and repo["license"].get("key") == license
             )
         ]
-        return repo_nam
+        return repo_names
