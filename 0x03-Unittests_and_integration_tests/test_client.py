@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-Integration test for GithubOrgClient.public_repos using fixtures.
-"""
-
 import unittest
 from unittest.mock import patch
 from parameterized import parameterized_class
@@ -17,18 +13,16 @@ from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
     "apache2_repos": apache2_repos
 }])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
-    """Integration test using fixtures."""
 
     @classmethod
     def setUpClass(cls):
-        """Patch requests.get with side_effect."""
         cls.get_patcher = patch('requests.get')
         cls.mock_get = cls.get_patcher.start()
 
         def side_effect(url):
             if url.endswith('/orgs/google'):
                 return FakeResponse(cls.org_payload)
-            elif url.endswith('/orgs/google/repos'):
+            if url.endswith('/orgs/google/repos'):
                 return FakeResponse(cls.repos_payload)
             return None
 
@@ -36,22 +30,18 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """Stop the patch."""
         cls.get_patcher.stop()
 
     def test_public_repos(self):
-        """Test all repos returned."""
         client = GithubOrgClient("google")
         self.assertEqual(client.public_repos(), self.expected_repos)
 
     def test_public_repos_with_license(self):
-        """Test repos filtered by apache-2.0 license."""
         client = GithubOrgClient("google")
         self.assertEqual(client.public_repos("apache-2.0"), self.apache2_repos)
 
 
 class FakeResponse:
-    """Mock response class."""
     def __init__(self, json_data):
         self._json_data = json_data
 
