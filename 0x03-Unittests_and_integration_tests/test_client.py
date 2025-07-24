@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """
-Integration test for GithubOrgClient.public_repos
+Integration test for GithubOrgClient.public_repos method.
 """
+
 import unittest
 from unittest.mock import patch
 from parameterized import parameterized_class
+
 from client import GithubOrgClient
 from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
 
@@ -18,15 +20,15 @@ from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
     }
 ])
 class TestIntegrationGithubOrgClient_0(unittest.TestCase):
-    """Integration tests for GithubOrgClient.public_repos"""
+    """Integration tests with fixtures."""
 
     @classmethod
     def setUpClass(cls):
-        """Patch requests.get and set side_effect with fixtures"""
+        """Patch requests.get and set side effects."""
         cls.get_patcher = patch('requests.get')
         mock_get = cls.get_patcher.start()
 
-        # Configure side_effect to return correct fixtures
+        # Map each URL to its corresponding fixture
         mock_get.side_effect = [
             cls.org_payload,
             cls.repos_payload
@@ -34,17 +36,17 @@ class TestIntegrationGithubOrgClient_0(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """Stop patcher"""
+        """Stop patcher."""
         cls.get_patcher.stop()
 
     def test_public_repos(self):
-        """Test that public_repos returns the expected list of repos"""
-        client = GithubOrgClient("test-org")
+        """Test public_repos returns expected repos."""
+        client = GithubOrgClient("google")
         self.assertEqual(client.public_repos(), self.expected_repos)
 
     def test_public_repos_with_license(self):
-        """Test that public_repos returns only repos with apache-2.0 license"""
-        client = GithubOrgClient("test-org")
+        """Test public_repos returns only repos with apache-2.0 license."""
+        client = GithubOrgClient("google")
         self.assertEqual(
             client.public_repos(license="apache-2.0"),
             self.apache2_repos
