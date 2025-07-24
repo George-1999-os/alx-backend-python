@@ -2,6 +2,7 @@
 import unittest
 from unittest.mock import patch
 from parameterized import parameterized_class
+
 from client import GithubOrgClient
 from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
 
@@ -22,7 +23,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         def side_effect(url):
             if url.endswith('/orgs/google'):
                 return FakeResponse(cls.org_payload)
-            if url.endswith('/orgs/google/repos'):
+            elif url.endswith('/orgs/google/repos'):
                 return FakeResponse(cls.repos_payload)
             return None
 
