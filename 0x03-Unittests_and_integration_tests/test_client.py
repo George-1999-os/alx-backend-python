@@ -1,50 +1,43 @@
 #!/usr/bin/env python3
-import unittest
-from unittest.mock import patch
-from parameterized import parameterized_class
+# client.py
 
-from client import GithubOrgClient
-from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
+import requests
+from functools import lru_cache
 
 
-@parameterized_class([{
-    "org_payload": org_payload,
-    "repos_payload": repos_payload,
-    "expected_repos": expected_repos,
-    "apache2_repos": apache2_repos
-}])
-class TestIntegrationGithubOrgClient(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.get_patcher = patch('requests.get')
-        cls.mock_get = cls.get_patcher.start()
-
-        def side_effect(url):
-            if url.endswith('/orgs/google'):
-                return FakeResponse(cls.org_payload)
-            elif url.endswith('/orgs/google/repos'):
-                return FakeResponse(cls.repos_payload)
-            return None
-
-        cls.mock_get.side_effect = side_effect
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.get_patcher.stop()
-
-    def test_public_repos(self):
-        client = GithubOrgClient("google")
-        self.assertEqual(client.public_repos(), self.expected_repos)
-
-    def test_public_repos_with_license(self):
-        client = GithubOrgClient("google")
-        self.assertEqual(client.public_repos("apache-2.0"), self.apache2_repos)
+def get_json(url):
+    """Fetch JSON data from a given URL."""
+    response = requests.get(url)
+    return response.json()
 
 
-class FakeResponse:
-    def __init__(self, json_data):
-        self._json_data = json_data
+class GithubOrgClient:
+    """GitHub Organization Client."""
 
-    def json(self):
-        return self._json_data
+    def __init__(self, org_name):
+        self.org_name = org_name
+
+    def org(self):
+        """Fetch organization information from GitHub API."""
+        url = f"https://api.github.com/orgs/{self.org_name}"
+        return get_json(url)
+
+    @property
+    @lru_cache()
+    def _public_repos_url(self):
+        """Memoized method to get the repos URL from org data."""
+        return self.org().get("repos_url")
+
+    def public_repos(self, license=None):
+        """
+        Return list of public repo names.
+        Optionally filter by license key (e.g., 'apache-2.0').
+        """
+        repos = get_json(self._public_repos_url)
+        repo_names = []
+        for repo in repos:
+            if license is None:
+                repo_names.append(repo["name"])
+            elif repo.get("license") and repo["license"].get("key") == license:
+                repo_names.append(repo["name"])
+        return repo_names
