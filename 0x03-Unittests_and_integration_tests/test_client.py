@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-Integration test for GithubOrgClient.public_repos method.
+Integration test for GithubOrgClient.public_repos.
 """
 
 import unittest
 from unittest.mock import patch
 from parameterized import parameterized_class
-
 from client import GithubOrgClient
 from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
 
@@ -19,35 +18,46 @@ from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
         "apache2_repos": apache2_repos
     }
 ])
-class TestIntegrationGithubOrgClient_0(unittest.TestCase):
-    """Integration tests with fixtures."""
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration test using fixtures"""
 
     @classmethod
     def setUpClass(cls):
-        """Patch requests.get and set side effects."""
+        """Start patcher and configure side_effect"""
         cls.get_patcher = patch('requests.get')
-        mock_get = cls.get_patcher.start()
+        cls.mock_get = cls.get_patcher.start()
 
-        # Map each URL to its corresponding fixture
-        mock_get.side_effect = [
-            cls.org_payload,
-            cls.repos_payload
-        ]
+        def side_effect(url):
+            if url.endswith('/orgs/google'):
+                return cls.org_payload
+            elif url.endswith('/orgs/google/repos'):
+                return cls.repos_payload
+            return None
+
+        cls.mock_get.side_effect = lambda url: FakeResponse(
+            cls.org_payload if url.endswith("/orgs/google") else cls.repos_payload
+        )
 
     @classmethod
     def tearDownClass(cls):
-        """Stop patcher."""
+        """Stop patcher"""
         cls.get_patcher.stop()
 
     def test_public_repos(self):
-        """Test public_repos returns expected repos."""
+        """Test that public_repos returns expected repos"""
         client = GithubOrgClient("google")
         self.assertEqual(client.public_repos(), self.expected_repos)
 
     def test_public_repos_with_license(self):
-        """Test public_repos returns only repos with apache-2.0 license."""
+        """Test that public_repos filters by apache-2.0 license"""
         client = GithubOrgClient("google")
-        self.assertEqual(
-            client.public_repos(license="apache-2.0"),
-            self.apache2_repos
-        )
+        self.assertEqual(client.public_repos("apache-2.0"), self.apache2_repos)
+
+
+class FakeResponse:
+    """Mock response object for requests.get"""
+    def __init__(self, json_data):
+        self._json_data = json_data
+
+    def json(self):
+        return self._json_data
