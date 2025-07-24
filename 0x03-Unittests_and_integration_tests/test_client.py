@@ -1,43 +1,29 @@
 #!/usr/bin/env python3
-# client.py
+"""
+Unit test for GithubOrgClient
+"""
+import unittest
+from unittest.mock import patch
+from parameterized import parameterized
 
-import requests
-from functools import lru_cache
-
-
-def get_json(url):
-    """Fetch JSON data from a given URL."""
-    response = requests.get(url)
-    return response.json()
+from client import GithubOrgClient
 
 
-class GithubOrgClient:
-    """GitHub Organization Client."""
+class TestGithubOrgClient(unittest.TestCase):
+    """Test case for GithubOrgClient.org"""
 
-    def __init__(self, org_name):
-        self.org_name = org_name
+    @parameterized.expand([
+        ("google",),
+        ("abc",)
+    ])
+    @patch('client.get_json')
+    def test_org(self, org_name, mock_get_json):
+        """Test that GithubOrgClient.org returns correct value"""
+        test_payload = {"login": org_name}
+        mock_get_json.return_value = test_payload
 
-    def org(self):
-        """Fetch organization information from GitHub API."""
-        url = f"https://api.github.com/orgs/{self.org_name}"
-        return get_json(url)
+        client = GithubOrgClient(org_name)
+        result = client.org()  # <-- FIXED: add () to call the method
 
-    @property
-    @lru_cache()
-    def _public_repos_url(self):
-        """Memoized method to get the repos URL from org data."""
-        return self.org().get("repos_url")
-
-    def public_repos(self, license=None):
-        """
-        Return list of public repo names.
-        Optionally filter by license key (e.g., 'apache-2.0').
-        """
-        repos = get_json(self._public_repos_url)
-        repo_names = []
-        for repo in repos:
-            if license is None:
-                repo_names.append(repo["name"])
-            elif repo.get("license") and repo["license"].get("key") == license:
-                repo_names.append(repo["name"])
-        return repo_names
+        self.assertEqual(result, test_payload)
+        mock_get_json.assert_called_once_with(f"https://api.github.com/orgs/{org_name}")
