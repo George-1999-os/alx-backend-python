@@ -5,23 +5,30 @@ import requests
 
 
 def get_json(url):
-    """Mocked in tests"""
-    return requests.get(url).json()
+    """Returns the JSON content of a given URL"""
+    response = requests.get(url)
+    return response.json()
 
 
 class GithubOrgClient:
-    """Github Org Client"""
-    ORG_URL = "https://api.github.com/orgs/{}"
+    """Github organization client"""
 
     def __init__(self, org_name):
-        self._org_name = org_name
+        """Initialize with organization name"""
+        self.org_name = org_name
 
     @property
     def org(self):
-        """Return org data"""
-        return get_json(self.ORG_URL.format(self._org_name))
+        """Fetch organization details from GitHub API"""
+        url = f"https://api.github.com/orgs/{self.org_name}"
+        return get_json(url)
 
     @property
     def _public_repos_url(self):
-        """Return the URL to public repos"""
+        """Extract repos_url from organization payload"""
         return self.org.get("repos_url")
+
+    def public_repos(self):
+        """Fetch list of public repositories"""
+        repos = get_json(self._public_repos_url)
+        return [repo["name"] for repo in repos]
