@@ -12,14 +12,11 @@ class TestGithubOrgClient(unittest.TestCase):
     @patch('client.GithubOrgClient.org', new_callable=PropertyMock)
     def test_public_repos_url(self, mock_org):
         """Test that _public_repos_url returns the correct URL from org"""
-        mock_org.return_value = {"repos_url": "https://api.github.com/orgs/test_org/repos"}
+        mock_org.return_value = {
+            "repos_url": "https://api.github.com/orgs/test_org/repos"
+        }
 
         client = GithubOrgClient("test_org")
-
-        # Clear lru_cache if previously called
-        if hasattr(client.org, 'cache_clear'):
-            client.org.cache_clear()
-
         result = client._public_repos_url
         self.assertEqual(result, "https://api.github.com/orgs/test_org/repos")
 
