@@ -1,34 +1,60 @@
 #!/usr/bin/env python3
-"""GithubOrgClient module"""
+"""
+GithubOrgClient module.
+Provides functionality to interact with a GitHub organization's public data.
+"""
 
 import requests
 
 
 def get_json(url):
-    """Returns the JSON content of a given URL"""
-    response = requests.get(url)
-    return response.json()
+    """
+    Fetch JSON data from a given URL.
+    Args:
+        url (str): The URL to send the GET request to.
+    Returns:
+        dict: The JSON response from the API.
+    """
+    return requests.get(url).json()
 
 
 class GithubOrgClient:
-    """Github organization client"""
+    """Client for GitHub organization information."""
+
+    ORG_URL = "https://api.github.com/orgs/{}"
 
     def __init__(self, org_name):
-        """Initialize with organization name"""
-        self.org_name = org_name
+        """
+        Initialize the GithubOrgClient.
+        Args:
+            org_name (str): The GitHub organization name.
+        """
+        self._org_name = org_name
 
     @property
     def org(self):
-        """Fetch organization details from GitHub API"""
-        url = f"https://api.github.com/orgs/{self.org_name}"
-        return get_json(url)
+        """
+        Retrieve the organization data.
+        Returns:
+            dict: JSON response containing organization data.
+        """
+        return get_json(self.ORG_URL.format(self._org_name))
 
     @property
     def _public_repos_url(self):
-        """Extract repos_url from organization payload"""
+        """
+        Get the URL to the public repositories of the organization.
+        Returns:
+            str: The URL string for public repos.
+        """
         return self.org.get("repos_url")
 
     def public_repos(self):
-        """Fetch list of public repositories"""
-        repos = get_json(self._public_repos_url)
-        return [repo["name"] for repo in repos]
+        """
+        Fetch the list of public repository names.
+        Returns:
+            list: A list of repository names.
+        """
+        url = self._public_repos_url
+        repos_data = get_json(url)
+        return [repo["name"] for repo in repos_data]
