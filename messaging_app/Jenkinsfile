@@ -1,31 +1,52 @@
 pipeline {
     agent any
 
+    environment {
+        VENV_DIR = 'venv'
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/George-1999-os/alx-backend-python.git',
-                    credentialsId: 'github-credentials'
+                // Pull the code from GitHub
+                git url: 'https://github.com/George-1999-os/alx-backend-python.git', branch: 'main'
             }
         }
 
-        stage('Install dependencies') {
+        stage('Setup Python Environment') {
             steps {
-                sh 'pip3 install -r messaging_app/requirements.txt'
+                // Create virtual environment and install dependencies
+                sh """
+                    python -m venv \$VENV_DIR
+                    . \$VENV_DIR/bin/activate
+                    pip install --upgrade pip
+                    pip install -r messaging_app/requirements.txt
+                """
             }
         }
 
-        stage('Run tests') {
+        stage('Run Tests') {
             steps {
-                sh 'pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml'
+                // Run pytest and generate report
+                sh """
+                    . \$VENV_DIR/bin/activate
+                    pytest messaging_app/ --junitxml=report.xml
+                """
             }
         }
 
-        stage('Test Report') {
+        stage('Archive Report') {
             steps {
-                junit 'report.xml'
+                // Archive the test report
+                archiveArtifacts artifacts: 'report.xml', allowEmptyArchive: true
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up workspace'
+            cleanWs()
         }
     }
 }
