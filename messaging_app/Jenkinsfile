@@ -4,31 +4,27 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Pull code from your GitHub repo
                 git branch: 'main',
-                    url: 'https://github.com/George-1999-os/alx-backend-python.git'
+                    url: 'https://github.com/George-1999-os/alx-backend-python.git',
+                    credentialsId: 'github-credentials'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install dependencies') {
             steps {
-                dir('messaging_app') {
-                    sh 'pip install -r requirements.txt'
-                }
+                sh 'pip3 install -r messaging_app/requirements.txt'
             }
         }
 
-        stage('Run Tests') {
+        stage('Run tests') {
             steps {
-                dir('messaging_app') {
-                    // Run pytest with JUnit report
-                    sh 'pytest --junitxml=report.xml'
-                }
+                sh 'pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml'
             }
-            post {
-                always {
-                    junit 'messaging_app/report.xml'
-                }
+        }
+
+        stage('Test Report') {
+            steps {
+                junit 'report.xml'
             }
         }
     }
