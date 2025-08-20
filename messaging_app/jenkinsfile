@@ -1,19 +1,39 @@
 pipeline {
     agent any
+
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                echo 'Building...'
+                // This will checkout whichever branch triggered the build
+                checkout scm
             }
         }
-        stage('Test') {
+
+        stage('Install dependencies') {
             steps {
-                echo 'Testing...'
+                sh '''
+                if [ -f requirements.txt ]; then
+                    pip install -r requirements.txt
+                elif [ -f messaging_app/requirements.txt ]; then
+                    pip install -r messaging_app/requirements.txt
+                else
+                    echo "No requirements.txt found"
+                fi
+                '''
             }
         }
-        stage('Deploy') {
+
+        stage('Run Tests') {
             steps {
-                echo 'Deploying...'
+                sh '''
+                pytest --maxfail=5 --disable-warnings -q --junitxml=report.xml || true
+                '''
+            }
+        }
+
+        stage('Archive Results') {
+            steps {
+                junit 'report.xml'
             }
         }
     }
