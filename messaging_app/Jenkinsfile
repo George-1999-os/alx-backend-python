@@ -4,29 +4,26 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Pulls latest code from GitHub
                 checkout scm
             }
         }
 
         stage('Install dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh 'pip install -r messaging_app/requirements.txt'
             }
         }
 
         stage('Run tests') {
             steps {
-                // Run pytest and generate a report
                 sh 'pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml'
             }
         }
-    }
 
-    post {
-        always {
-            // Archive the pytest report so Jenkins checker sees it
-            junit 'report.xml'
+        stage('Test Report') {
+            steps {
+                junit 'report.xml'
+            }
         }
     }
 }
