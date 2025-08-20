@@ -1,11 +1,6 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
-from django.contrib.auth.models import User
+from django.shortcuts import render
+from .models import Message
 
-@login_required
-def delete_user(request):
-    """Allow logged-in user to delete their own account."""
-    if request.method == "POST":
-        request.user.delete()
-        return redirect('home')  # or your logout/homepage URL
-    return redirect('profile')  # or wherever appropriate
+def inbox(request):
+    unread_messages = Message.unread.unread_for_user(request.user).select_related('sender').only('content', 'timestamp', 'sender__username')
+    return render(request, 'messaging/inbox.html', {'messages': unread_messages})
