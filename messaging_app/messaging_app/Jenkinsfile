@@ -4,36 +4,27 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // This will checkout whichever branch triggered the build
-                checkout scm
+                git branch: 'main',
+                    url: 'https://github.com/George-1999-os/alx-backend-python.git',
+                    credentialsId: 'github-credentials'
             }
         }
 
         stage('Install dependencies') {
             steps {
-                sh '''
-                if [ -f requirements.txt ]; then
-                    pip install -r requirements.txt
-                elif [ -f messaging_app/requirements.txt ]; then
-                    pip install -r messaging_app/requirements.txt
-                else
-                    echo "No requirements.txt found"
-                fi
-                '''
+                sh 'pip3 install -r requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh '''
-                pytest --maxfail=5 --disable-warnings -q --junitxml=report.xml || true
-                '''
+                sh 'pytest --maxfail=1 --disable-warnings -q'
             }
         }
 
-        stage('Archive Results') {
+        stage('Report') {
             steps {
-                junit 'report.xml'
+                junit 'tests/reports/*.xml'
             }
         }
     }
