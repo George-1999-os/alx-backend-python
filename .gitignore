@@ -1,4 +1,4 @@
-# Python bytecode
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -7,30 +7,17 @@ __pycache__/
 # Virtual environments
 venv/
 env/
-.venv/
 
-# Django stuff
+# Django
 *.log
 *.pot
 *.pyc
-*.mo
-*.sqlite3
 db.sqlite3
 media/
 
-# Environment variables
-.env
-.env.*
-
-# VS Code / IDE
+# VS Code
 .vscode/
-.idea/
 
-# OS generated files
+# OS files
 .DS_Store
 Thumbs.db
-
-# Testing / coverage
-.coverage
-htmlcov/
-.pytest_cache/
