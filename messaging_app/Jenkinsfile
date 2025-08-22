@@ -1,11 +1,8 @@
-pipeline {
-    agent any
-
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/George-1999-os/your-repo.git'
-            }
+pipeline { agent any
+# Replace "your-repo.git" with "alx-backend-python.git"
+    stages { stage('Checkout') { git add messaging_app/Jenkinsfile steps { git commit -m 
+"Fix: correct Jenkinsfile repo URL" git branch: 'main', url: 
+'https://github.com/George-1999-os/alx-backend-python.git' git push }
         }
 
         stage('Install dependencies') {
