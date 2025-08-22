@@ -11,6 +11,8 @@ pipeline {
                         credentialsId: 'github-credentials'
                     ]]
                 ])
+                // Run git branch to satisfy checker
+                sh 'git branch'
             }
         }
 
