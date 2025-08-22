@@ -4,25 +4,25 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/George-1999-os/alx-backend-python.git'
+                git branch: 'main', url: 'https://github.com/George-1999-os/your-repo.git'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install dependencies') {
             steps {
                 sh 'pip install -r requirements.txt'
             }
         }
 
-        stage('Run Tests') {
+        stage('Run tests') {
             steps {
-                sh 'pytest --junitxml=report.xml'
+                sh 'pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml'
             }
-            post {
-                always {
-                    junit 'report.xml'
-                }
+        }
+
+        stage('Archive results') {
+            steps {
+                junit 'report.xml'
             }
         }
     }
