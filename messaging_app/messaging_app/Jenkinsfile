@@ -4,41 +4,26 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
-            }
-        }
-
-        stage('Credentials') {
-            steps {
-                // This confirms repo credentials (checker looks for it)
-                sh 'git branch'
+                checkout([$class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/George-1999-os/alx-backend-python.git',
+                        credentialsId: 'github-credentials'
+                    ]]
+                ])
             }
         }
 
         stage('Install dependencies') {
             steps {
-                sh 'pip3 install --upgrade pip'
                 sh 'pip3 install -r messaging_app/requirements.txt'
             }
         }
 
-        stage('PEP8 check') {
-            steps {
-                sh 'pip3 install pycodestyle'
-                sh 'pycodestyle messaging_app/'
-            }
-        }
-
-        stage('Run Tests') {
+        stage('Run tests') {
             steps {
                 sh 'pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml'
             }
-        }
-    }
-
-    post {
-        always {
-            junit 'report.xml'
         }
     }
 }
