@@ -1,0 +1,10 @@
+cat > messaging_app/.github/workflows/ci.yml <<'YAML'
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+YAML
