@@ -4,28 +4,30 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checker requires git credentials check
+                // Checkout repo
+                checkout scm
+                // Show git branch (credentials check)
                 sh 'git branch'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install dependencies') {
             steps {
-                // Checker specifically expects messaging_app/requirements.txt
-                sh 'pip3 install -r messaging_app/requirements.txt'
+                sh 'pip install --upgrade pip'
+                sh 'pip install -r messaging_app/requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'pytest --maxfail=1 --disable-warnings -q'
+                sh 'pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml'
             }
         }
+    }
 
-        stage('Test Report') {
-            steps {
-                sh 'pytest --junitxml=report.xml || true'
-            }
+    post {
+        always {
+            junit 'report.xml'
         }
     }
 }
