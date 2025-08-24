@@ -51,16 +51,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'messaging_app.wsgi.application'
 
+import os
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'test_db',       # same as MYSQL_DB
-        'USER': 'root',          # same as MYSQL_USER
-        'PASSWORD': 'root',      # same as MYSQL_PASSWORD
-        'HOST': '127.0.0.1',     # same as MYSQL_HOST
-        'PORT': '3306',          # same as MYSQL_PORT
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("MYSQL_DB", "messaging_app_test"),
+        "USER": os.getenv("MYSQL_USER", "root"),
+        "PASSWORD": os.getenv("MYSQL_PASSWORD", "rootpassword"),
+        "HOST": os.getenv("MYSQL_HOST", "127.0.0.1"),
+        "PORT": os.getenv("MYSQL_PORT", "3306"),
     }
 }
+
 
 
 AUTH_PASSWORD_VALIDATORS = [
