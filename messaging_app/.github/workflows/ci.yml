@@ -14,8 +14,8 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: alx_messaging
+          MYSQL_ROOT_PASSWORD: ""
+          MYSQL_DATABASE: messaging_app
         ports:
           - 3306:3306
         options: >-
@@ -40,12 +40,12 @@ jobs:
 
       - name: Run Django migrations
         env:
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ROOT_PASSWORD: ""
         run: |
-          python manage.py migrate
+          python manage.py migrate --noinput
 
       - name: Run Django tests
         env:
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ROOT_PASSWORD: ""
         run: |
           python manage.py test
