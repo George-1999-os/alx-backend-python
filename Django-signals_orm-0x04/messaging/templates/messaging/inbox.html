@@ -1,0 +1,15 @@
+<!-- messaging/templates/messaging/inbox.html -->
+<h1>Inbox</h1>
+
+{% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li>
+        <strong>{{ message.sender.username }}</strong>: {{ message.content }}
+        <br><small>{{ message.timestamp }}</small>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No unread messages.</p>
+{% endif %}

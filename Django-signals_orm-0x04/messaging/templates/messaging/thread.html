@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Message Thread</title>
+    <style>
+        .reply {
+            margin-left: 20px;
+            border-left: 2px solid #ccc;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Message Thread</h1>
+
+    <div>
+        <p><strong>{{ thread.message.sender.username }}</strong>: {{ thread.message.content }}</p>
+
+        {% for reply in thread.replies %}
+            <div class="reply">
+                <strong>{{ reply.message.sender.username }}</strong>: {{ reply.message.content }}
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
