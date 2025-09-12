@@ -17,9 +17,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-
-    # Custom request logging middleware
-    "chats.middleware.RequestLoggingMiddleware",
+    "chats.middleware.RequestLoggingMiddleware",  # <--- custom middleware
 ]
 
 ROOT_URLCONF = "config.urls"  # points to urls.py in config
