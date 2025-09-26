@@ -25,12 +25,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    # Custom middleware
+        # Custom middlewares
     'chats.middleware.RequestLoggingMiddleware',
     'chats.middleware.RestrictAccessByTimeMiddleware',
     'chats.middleware.OffensiveLanguageMiddleware',
-    "chats.middleware.RolepermissionMiddleware",
+    'chats.middleware.RolepermissionMiddleware',
 ]
+
 
 
 ROOT_URLCONF = 'urls'  # adjust if you have a urls.py
