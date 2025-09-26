@@ -1,5 +1,6 @@
 import logging
-from datetime import datetime
+import datetime
+from django.http import HttpResponseForbidden
 
 # Configure logger
 logger = logging.getLogger("request_logger")
@@ -9,23 +10,19 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
+
 class RequestLoggingMiddleware:
+    """Middleware that logs every request with username and path."""
+
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
         user = request.user if request.user.is_authenticated else "AnonymousUser"
         log_message = f"User: {user} - Path: {request.path}"
-
-        # Write to log file
         logger.info(log_message)
+        return self.get_response(request)
 
-        # Continue processing
-        response = self.get_response(request)
-        return response
-
-from django.http import HttpResponseForbidden
-import datetime
 
 class OffensiveLanguageMiddleware:
     """
@@ -50,7 +47,9 @@ class OffensiveLanguageMiddleware:
 
             # Block if limit exceeded
             if len(self.message_log[ip]) >= 5:
-                return HttpResponseForbidden("Too many messages. Please wait before sending more.")
+                return HttpResponseForbidden(
+                    "Too many messages. Please wait before sending more."
+                )
 
             # Log this request
             self.message_log[ip].append(now)
@@ -63,4 +62,3 @@ class OffensiveLanguageMiddleware:
         if x_forwarded_for:
             return x_forwarded_for.split(",")[0]
         return request.META.get("REMOTE_ADDR")
-
