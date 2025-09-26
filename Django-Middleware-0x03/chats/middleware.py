@@ -1,7 +1,8 @@
 # chats/middleware.py
 from django.http import HttpResponseForbidden
 
-class RolePermissionMiddleware:
+class RolepermissionMiddleware:
+
     """
     Middleware that restricts access based on user role.
     Only users with role 'admin' or 'moderator' are allowed.
