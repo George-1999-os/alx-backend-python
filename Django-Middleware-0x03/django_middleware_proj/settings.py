@@ -32,29 +32,26 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # Custom middleware
-    "chats.middleware.RequestLoggingMiddleware",
-    "chats.middleware.RestrictAccessByTimeMiddleware",
-    "chats.middleware.OffensiveLanguageMiddleware",
-    "chats.middleware.RolePermissionMiddleware",  #  add this line
+    'chats.middleware.RequestLoggingMiddleware',
+    'chats.middleware.RestrictAccessByTimeMiddleware',
+    'chats.middleware.OffensiveLanguageMiddleware',
+    'chats.middleware.RolePermissionMiddleware',
 ]
 
 
 
 
 
-
-
-
-ROOT_URLCONF = 'django_middleware_proj.urls'  # only works if `django_middleware_proj` is a Python package
+ROOT_URLCONF = "config.urls"  # points to urls.py in config
 SECRET_KEY = "dummy-secret-key"
 DEBUG = True
 ALLOWED_HOSTS = []
