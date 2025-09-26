@@ -1,7 +1,9 @@
-from django.http import HttpResponse
+# chats/views.py
+from django.http import JsonResponse
 
-def hello_view(request):
-    return HttpResponse("Hello world!")
-
-def chat_view(request):
-    return HttpResponse("Welcome to the chat!")
+def chat_home(request):
+    """
+    Simple endpoint for the chat page.
+    Returns a welcome message as JSON.
+    """
+    return JsonResponse({"message": "Welcome to the chat!"})
