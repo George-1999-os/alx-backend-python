@@ -88,7 +88,8 @@ class OffensiveLanguageMiddleware:
         # --------------------------
 # 4. Role Permission Middleware
 # --------------------------
-class RolePermissionMiddleware:
+# 4. Role Permission Middleware
+class RolepermissionMiddleware:  # <-- lowercase p here
     """
     Middleware that allows only users with specific roles (admin or moderator)
     to access certain chat actions.
@@ -99,7 +100,6 @@ class RolePermissionMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        # Only enforce for chat URLs
         if request.path.startswith('/chat/'):
             user = getattr(request, "user", None)
             if not user or not hasattr(user, "role") or user.role not in self.ALLOWED_ROLES:
