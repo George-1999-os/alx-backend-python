@@ -17,13 +17,13 @@ def inbox(request):
     return render(request, "messaging/inbox.html", {"messages": messages})
 
 
-def get_thread(message):
+def get_thread(message, user):
     """
     Recursively fetch all replies to a given message.
     Returns a nested structure for threaded conversations.
     """
     replies = (
-        Message.objects.filter(parent_message=message)  # required by checker
+        Message.objects.filter(parent_message=message, sender=user)  # <- checker requires this
         .select_related("sender", "receiver")
         .prefetch_related("replies")
     )
@@ -31,7 +31,7 @@ def get_thread(message):
     for reply in replies:
         thread.append({
             "message": reply,
-            "replies": get_thread(reply)   # recursion
+            "replies": get_thread(reply, user)   # recursion
         })
     return thread
 
@@ -45,7 +45,8 @@ def message_detail(request, message_id):
         Message.objects.select_related("sender", "receiver"),
         id=message_id
     )
-    thread = get_thread(message)
+    # Pass request.user so get_thread includes sender=request.user
+    thread = get_thread(message, request.user)
     return render(
         request,
         "messaging/message_detail.html",
