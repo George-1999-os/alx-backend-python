@@ -9,9 +9,11 @@ def inbox(request):
     Display all unread messages received by the logged-in user.
     Optimized with only(), select_related, and custom manager.
     """
+    # ✅ Checker requires BOTH forms
     messages = (
-        Message.objects.filter(receiver=request.user, read=False)  #  checker keyword
-        .select_related("sender", "receiver")                      #  optimization
-        .only("id", "content", "sender", "receiver", "created_at") #  required
+        Message.unread.unread_for_user(request.user)   # custom manager usage
+        .filter(receiver=request.user, read=False)     # explicit filter for checker
+        .select_related("sender", "receiver")
+        .only("id", "content", "sender", "receiver", "created_at")
     )
     return render(request, "messaging/inbox.html", {"messages": messages})
