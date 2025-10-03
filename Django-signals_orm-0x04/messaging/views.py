@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_page
 from .models import Message
 
 
 @login_required
+@cache_page(60)  # ✅ cache the inbox view for 60 seconds
 def inbox(request):
     """
     Display all unread messages received by the logged-in user.
