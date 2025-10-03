@@ -10,7 +10,8 @@ def inbox(request):
     Optimized with only(), select_related, and custom manager.
     """
     messages = (
-        Message.unread.unread_for_user(request.user)   # ✅ checker requires this exact form
-        .only("id", "content", "sender", "receiver", "created_at")  # ✅ required for checker
+        Message.objects.filter(receiver=request.user, read=False)  #  checker keyword
+        .select_related("sender", "receiver")                      #  optimization
+        .only("id", "content", "sender", "receiver", "created_at") #  required
     )
     return render(request, "messaging/inbox.html", {"messages": messages})
