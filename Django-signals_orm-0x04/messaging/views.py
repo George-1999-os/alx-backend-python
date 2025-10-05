@@ -5,7 +5,7 @@ from .models import Message
 
 
 @login_required
-@cache_page(60)  # ✅ cache the inbox view for 60 seconds
+@cache_page(60)  #  cache the inbox view for 60 seconds
 def inbox(request):
     """
     Display all unread messages received by the logged-in user.
@@ -23,3 +23,16 @@ def inbox(request):
     )
 
     return render(request, "messaging/inbox.html", {"messages": messages})
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
+from django.contrib.auth.models import User
+
+@login_required
+def delete_user(request):
+    """
+    View to delete the currently logged-in user.
+    """
+    user = request.user
+    user.delete()  # triggers the post_delete signal
+    return redirect("/")
