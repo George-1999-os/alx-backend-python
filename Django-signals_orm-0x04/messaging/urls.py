@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import inbox  #  match the view name
+from . import views
 
 urlpatterns = [
-    path('inbox/', inbox, name='inbox'),
+    path("inbox/", views.inbox, name="inbox"),
+    path("delete_user/", views.delete_user, name="delete_user"),
+    path("threaded_conversation/", views.threaded_conversation, name="threaded_conversation"),
 ]

@@ -97,3 +97,8 @@ CACHES = {
         'LOCATION': 'unique-snowflake',
     }
 }
+
+# Authentication redirects
+LOGIN_URL = "/admin/login/"          # Redirects to admin login if user is not logged in
+LOGIN_REDIRECT_URL = "/inbox/"       # After login, go to inbox
+LOGOUT_REDIRECT_URL = "/admin/login/"
