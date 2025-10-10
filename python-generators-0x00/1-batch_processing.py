@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Batch processing using generators.
+Batch processing using generators only.
 """
 
 import sqlite3
