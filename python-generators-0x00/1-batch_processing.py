@@ -1,26 +1,34 @@
 #!/usr/bin/python3
 """
-Generator functions to process user data in batches.
+Fetch and process user data from the database in batches using generators.
 """
 
-from stream_users import stream_users
+import sqlite3
 
 
 def stream_users_in_batches(batch_size):
-    """Yield users in batches of a given size."""
-    batch = []
-    for user in stream_users():
-        batch.append(user)
-        if len(batch) == batch_size:
-            yield batch
-            batch = []
-    if batch:
-        yield batch
+    """
+    Generator that fetches rows in batches from the user_data table.
+    """
+    conn = sqlite3.connect("user_data.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM user_data")
+    while True:
+        rows = cursor.fetchmany(batch_size)
+        if not rows:
+            break
+        yield [dict(row) for row in rows]
+
+    conn.close()
 
 
 def batch_processing(batch_size):
-    """Process batches and print users over age 25."""
+    """
+    Process each batch and print users over age 25.
+    """
     for batch in stream_users_in_batches(batch_size):
-        filtered = [user for user in batch if user.get("age", 0) > 25]
-        for user in filtered:
-            print(user)
+        for user in batch:
+            if user["age"] > 25:
+                print(user)
