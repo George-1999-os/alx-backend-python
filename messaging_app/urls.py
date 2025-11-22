@@ -1,16 +1,14 @@
-#!/usr/bin/env python3
-"""Django project-level URL configuration."""
-
-from django.contrib import admin
 from django.urls import path, include
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework.routers import DefaultRouter
+from chats.views import MessageViewSet, ConversationViewSet
+
+router = DefaultRouter()
+router.register(r'messages', MessageViewSet)
+router.register(r'conversations', ConversationViewSet)
 
 urlpatterns = [
-  # Django Admin panel
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # JWT token obtain
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # JWT token refresh
-    path('api/chat/', include('messaging_app.chatapp.urls')),  #  Correct import path
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/chats/', include(router.urls)),
 ]
