@@ -1,7 +1,11 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import MessageViewSet, ConversationViewSet
+
+router = DefaultRouter()
+router.register(r'messages', MessageViewSet, basename='message')
+router.register(r'conversations', ConversationViewSet, basename='conversation')
 
 urlpatterns = [
-    # Example: add your view endpoints here
-    # path('', views.index, name='chats_index'),
+    path('', include(router.urls)),
 ]
