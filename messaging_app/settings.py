@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'messaging_app.chats',
 ]
 
-REST_FRAMEWORK = {
+RREST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
@@ -35,6 +35,7 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
 }
+
 
 
 
