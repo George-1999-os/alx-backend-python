@@ -42,6 +42,7 @@ REST_FRAMEWORK = {
 
 
 
+
 # Optional: SimpleJWT settings
 from datetime import timedelta
 
