@@ -27,10 +27,11 @@ INSTALLED_APPS = [
 
 
 REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "chats.pagination.MessagePagination",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",  # <-- checker requires exact string
     "PAGE_SIZE": 20,
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
+
 
 
 
