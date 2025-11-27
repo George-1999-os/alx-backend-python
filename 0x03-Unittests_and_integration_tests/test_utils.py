@@ -3,9 +3,12 @@
 
 import unittest
 from parameterized import parameterized
-from utils import access_nested_map
+from unittest.mock import patch, Mock
+from utils import access_nested_map, get_json
 
-
+# --------------------------
+# TestAccessNestedMap
+# --------------------------
 class TestAccessNestedMap(unittest.TestCase):
     """Tests for the access_nested_map function"""
 
@@ -18,11 +21,6 @@ class TestAccessNestedMap(unittest.TestCase):
         """Test access_nested_map returns expected results"""
         self.assertEqual(access_nested_map(nested_map, path), expected)
 
-from parameterized import parameterized
-
-class TestAccessNestedMap(unittest.TestCase):
-    """TestCase for access_nested_map"""
-
     @parameterized.expand([
         ({}, ("a",)),
         ({"a": 1}, ("a", "b")),
@@ -31,5 +29,24 @@ class TestAccessNestedMap(unittest.TestCase):
         """Test that KeyError is raised for invalid paths"""
         with self.assertRaises(KeyError) as cm:
             access_nested_map(nested_map, path)
-
         self.assertEqual(str(cm.exception), repr(path[-1]))
+
+# --------------------------
+# TestGetJson
+# --------------------------
+class TestGetJson(unittest.TestCase):
+    """TestCase for get_json function"""
+
+    @parameterized.expand([
+        ("http://example.com", {"payload": True}),
+        ("http://holberton.io", {"payload": False}),
+    ])
+    @patch("utils.requests.get")
+    def test_get_json(self, test_url, test_payload, mock_get):
+        """Test that get_json returns the expected payload"""
+        mock_response = Mock()
+        mock_response.json.return_value = test_payload
+        mock_get.return_value = mock_response
+
+        self.assertEqual(get_json(test_url), test_payload)
+        mock_get.assert_called_once_with(test_url)
