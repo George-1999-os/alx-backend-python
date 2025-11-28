@@ -2,7 +2,6 @@
 """Unit tests for utils"""
 
 import unittest
-from utils import memoize
 from parameterized import parameterized
 from unittest.mock import patch, Mock
 from utils import access_nested_map, get_json, memoize
@@ -64,14 +63,12 @@ class TestMemoize(unittest.TestCase):
                 return self.a_method()
 
         obj = TestClass()
-        with patch.object(TestClass, 'a_method', return_value=42) as mocked:
-            # Call the memoized method twice
-            result1 = obj.a_property()  # <-- must call
-            result2 = obj.a_property()  # <-- must call
 
-            # Assert both results are correct
+        with patch.object(TestClass, "a_method", return_value=42) as mocked:
+            result1 = obj.a_property
+            result2 = obj.a_property
+
             self.assertEqual(result1, 42)
             self.assertEqual(result2, 42)
 
-            # Ensure the original method was called only once
             mocked.assert_called_once()
