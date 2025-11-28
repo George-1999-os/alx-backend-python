@@ -1,41 +1,59 @@
 #!/usr/bin/env python3
-"""Unit tests for GithubOrgClient class in client module."""
+"""Unit tests for client.GithubOrgClient"""
 
 import unittest
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch, MagicMock, PropertyMock
+from parameterized import parameterized
 from client import GithubOrgClient
 
 
 class TestGithubOrgClient(unittest.TestCase):
-    """Test suite for the GithubOrgClient class."""
+    """TestCase for GithubOrgClient"""
+
+    @patch('client.get_json')
+    def test_org(self, mock_get_json):
+        """Test org returns correct value"""
+        mock_payload = {"repos_url": "https://api.github.com/orgs/google/repos"}
+        mock_get_json.return_value = mock_payload
+
+        client = GithubOrgClient("google")
+        result = client.org()
+
+        mock_get_json.assert_called_once_with(
+            "https://api.github.com/orgs/google"
+        )
+        self.assertEqual(result, mock_payload)
+
+    def test_public_repos_url(self):
+        """Test _public_repos_url property"""
+        with patch.object(
+            GithubOrgClient,
+            'org',
+            return_value={"repos_url": "http://example.com/repos"},
+        ):
+            client = GithubOrgClient("google")
+            self.assertEqual(client._public_repos_url,
+                             "http://example.com/repos")
 
     @patch('client.get_json')
     def test_public_repos(self, mock_get_json):
-        """
-        Test that public_repos returns the expected list of repository names.
-
-        Mocks:
-            - get_json to return a list of repository dicts.
-            - _public_repos_url property to return a test URL.
-        """
+        """Test public_repos returns repo names"""
         mock_get_json.return_value = [
-            {'name': 'alx'},
-            {'name': 'backend'},
-            {'name': 'python'}
+            {"name": "repo1"},
+            {"name": "repo2"},
         ]
+
+        client = GithubOrgClient("google")
 
         with patch.object(
             GithubOrgClient,
-            "_public_repos_url",
+            '_public_repos_url',
             new_callable=PropertyMock
-        ) as mock_url:
-            mock_url.return_value = "https://api.github.com/orgs/testorg/repos"
+        ) as mock_repo_url:
+            mock_repo_url.return_value = "https://api.github.com/orgs/google/repos"
+            repos = client.public_repos()
 
-            client = GithubOrgClient("testorg")
-            result = client.public_repos()
-
-            self.assertEqual(result, ['alx', 'backend', 'python'])
+            self.assertEqual(repos, ["repo1", "repo2"])
             mock_get_json.assert_called_once_with(
-                "https://api.github.com/orgs/testorg/repos"
+                "https://api.github.com/orgs/google/repos"
             )
-            mock_url.assert_called_once()
