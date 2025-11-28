@@ -2,7 +2,7 @@
 """Unit tests for client.GithubOrgClient"""
 
 import unittest
-from unittest.mock import patch, MagicMock, PropertyMock
+from unittest.mock import patch, PropertyMock
 from parameterized import parameterized
 from client import GithubOrgClient
 
@@ -10,18 +10,20 @@ from client import GithubOrgClient
 class TestGithubOrgClient(unittest.TestCase):
     """TestCase for GithubOrgClient"""
 
+    @parameterized.expand([
+        ("google",),
+        ("abc",)
+    ])
     @patch('client.get_json')
-    def test_org(self, mock_get_json):
+    def test_org(self, org_name, mock_get_json):
         """Test org returns correct value"""
-        mock_payload = {"repos_url": "https://api.github.com/orgs/google/repos"}
+        mock_payload = {"repos_url": f"https://api.github.com/orgs/{org_name}/repos"}
         mock_get_json.return_value = mock_payload
 
-        client = GithubOrgClient("google")
+        client = GithubOrgClient(org_name)
         result = client.org()
 
-        mock_get_json.assert_called_once_with(
-            "https://api.github.com/orgs/google"
-        )
+        mock_get_json.assert_called_once_with(f"https://api.github.com/orgs/{org_name}")
         self.assertEqual(result, mock_payload)
 
     def test_public_repos_url(self):
@@ -32,8 +34,7 @@ class TestGithubOrgClient(unittest.TestCase):
             return_value={"repos_url": "http://example.com/repos"},
         ):
             client = GithubOrgClient("google")
-            self.assertEqual(client._public_repos_url,
-                             "http://example.com/repos")
+            self.assertEqual(client._public_repos_url, "http://example.com/repos")
 
     @patch('client.get_json')
     def test_public_repos(self, mock_get_json):
