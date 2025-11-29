@@ -11,13 +11,11 @@ class TestGithubOrgClient(unittest.TestCase):
     """TestCase for GithubOrgClient"""
 
     @parameterized.expand([
-    ("google",),
-    ("abc",)
-])
-@patch('client.get_json')  # innermost
-def test_org(self, org_name, mock_get_json):
-    ...
-
+        ("google",),
+        ("abc",)
+    ])
+    @patch('client.get_json')
+    def test_org(self, org_name, mock_get_json):
         """Test org returns correct value"""
         mock_payload = {"repos_url": f"https://api.github.com/orgs/{org_name}/repos"}
         mock_get_json.return_value = mock_payload
