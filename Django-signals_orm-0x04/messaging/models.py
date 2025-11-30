@@ -19,7 +19,7 @@ class Message(models.Model):
         related_name="edited_messages"
     )
 
-    # ✅ Add this for threaded replies
+    # Threaded replies
     parent_message = models.ForeignKey(
         "self",
         null=True,
@@ -46,3 +46,14 @@ class MessageHistory(models.Model):
 
     def __str__(self):
         return f"Edit history for Message {self.message.id}"
+
+
+#  REQUIRED BY ALX CHECKER
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Notification for {self.user.username}"
