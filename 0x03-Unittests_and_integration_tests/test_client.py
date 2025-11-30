@@ -10,7 +10,6 @@ from client import GithubOrgClient
 class TestGithubOrgClient(unittest.TestCase):
     """TestCase for GithubOrgClient class."""
 
-
     @parameterized.expand([
         ("google",),
         ("abc",)
@@ -20,10 +19,8 @@ class TestGithubOrgClient(unittest.TestCase):
         """Test GithubOrgClient.org returns correct org data."""
         test_payload = {"name": org_name}
         mock_get_json.return_value = test_payload
-
         client = GithubOrgClient(org_name)
         result = client.org
-
         self.assertEqual(result, test_payload)
         mock_get_json.assert_called_once_with(
             f"https://api.github.com/orgs/{org_name}"
@@ -32,7 +29,6 @@ class TestGithubOrgClient(unittest.TestCase):
 
 class TestPublicRepos(unittest.TestCase):
     """TestCase for public_repos method."""
-
 
     @patch('client.get_json')
     def test_public_repos(self, mock_get_json):
@@ -43,16 +39,13 @@ class TestPublicRepos(unittest.TestCase):
             {"name": "repo3"}
         ]
         mock_get_json.return_value = test_payload
-
         with patch(
             'client.GithubOrgClient._public_repos_url',
             new_callable=PropertyMock,
             return_value="https://api.github.com/orgs/google/repos"
         ) as mock_url:
-
             client = GithubOrgClient("google")
             result = client.public_repos()
-
             self.assertEqual(result, ["repo1", "repo2", "repo3"])
             mock_url.assert_called_once()
             mock_get_json.assert_called_once()
@@ -60,7 +53,6 @@ class TestPublicRepos(unittest.TestCase):
 
 class TestPublicReposWithLicense(unittest.TestCase):
     """TestCase for public_repos with license filter."""
-
 
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
