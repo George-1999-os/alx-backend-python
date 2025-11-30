@@ -1,68 +1,60 @@
 #!/usr/bin/env python3
-"""Client module for accessing GitHub organization data."""
+"""GithubOrgClient module
+"""
 
-from typing import Dict, List
+from typing import List, Dict
 from utils import get_json
 
 
 class GithubOrgClient:
-    """Client for the GitHub organization API."""
+    """Client for interacting with GitHub organizations"""
 
     ORG_URL = "https://api.github.com/orgs/{org}"
 
     def __init__(self, org_name: str) -> None:
-        """Initialize GithubOrgClient with an organization name."""
+        """Initialize GithubOrgClient with organization name"""
         self._org_name = org_name
 
     @property
     def org(self) -> Dict:
-        """
-        Retrieve organization information from the GitHub API.
-
-        Returns:
-            Dict: A dictionary containing organization details
-            such as name, description, URL, and repo links.
-        """
-        url = self.ORG_URL.format(org=self._org_name)
-        return get_json(url)
+        """Fetch organization information from GitHub"""
+        return get_json(self.ORG_URL.format(org=self._org_name))
 
     @property
     def _public_repos_url(self) -> str:
-        """Retrieve the URL that lists public repositories."""
+        """Return the URL for the organization's public repositories"""
         return self.org.get("repos_url")
 
     def public_repos(self, license: str = None) -> List[str]:
-        """
-        List public repository names for the organization.
+        """Return the list of public repository names
 
         Args:
-            license (str, optional): Filter repositories by license key.
+            license (str): Optional license key to filter repos.
 
         Returns:
-            List[str]: List of repository names.
+            List[str]: List of repo names
         """
         repos = get_json(self._public_repos_url)
-        repo_names = [repo.get("name") for repo in repos]
+        repo_names = [repo["name"] for repo in repos]
 
         if license is None:
             return repo_names
 
         return [
-            repo.get("name") for repo in repos
+            repo["name"] for repo in repos
             if self.has_license(repo, license)
         ]
 
     @staticmethod
     def has_license(repo: Dict, license_key: str) -> bool:
-        """
-        Check whether a repository has a specific license key.
+        """Check if a repository has a specific license
 
         Args:
-            repo (Dict): Repository metadata dictionary.
-            license_key (str): License key to check.
+            repo (Dict): Repo metadata
+            license_key (str): License key to check for
 
         Returns:
-            bool: True if repo has the given license key, else False.
+            bool: True if repo has matching license
         """
         repo_license = repo.get("license", {}).get("key")
         return repo_license == license_key
