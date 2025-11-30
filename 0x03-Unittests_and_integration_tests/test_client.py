@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Unit tests for client.GithubOrgClient module
-"""
+"""Unit tests for client.GithubOrgClient module."""
 
 import unittest
 from unittest.mock import patch, PropertyMock
@@ -9,7 +8,8 @@ from client import GithubOrgClient
 
 
 class TestGithubOrgClient(unittest.TestCase):
-    """TestCase for GithubOrgClient class"""
+    """TestCase for GithubOrgClient class."""
+
 
     @parameterized.expand([
         ("google",),
@@ -17,7 +17,7 @@ class TestGithubOrgClient(unittest.TestCase):
     ])
     @patch('client.get_json')
     def test_org(self, org_name, mock_get_json):
-        """Test GithubOrgClient.org returns correct org data"""
+        """Test GithubOrgClient.org returns correct org data."""
         test_payload = {"name": org_name}
         mock_get_json.return_value = test_payload
 
@@ -31,17 +31,17 @@ class TestGithubOrgClient(unittest.TestCase):
 
 
 class TestPublicRepos(unittest.TestCase):
-    """TestCase for public_repos method"""
+    """TestCase for public_repos method."""
+
 
     @patch('client.get_json')
     def test_public_repos(self, mock_get_json):
-        """Unit-test GithubOrgClient.public_repos"""
+        """Unit-test GithubOrgClient.public_repos."""
         test_payload = [
             {"name": "repo1"},
             {"name": "repo2"},
             {"name": "repo3"}
         ]
-
         mock_get_json.return_value = test_payload
 
         with patch(
@@ -59,13 +59,14 @@ class TestPublicRepos(unittest.TestCase):
 
 
 class TestPublicReposWithLicense(unittest.TestCase):
-    """TestCase for public_repos with license filter"""
+    """TestCase for public_repos with license filter."""
+
 
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
         ({"license": {"key": "other"}}, "my_license", False),
     ])
     def test_has_license(self, repo, license_key, expected):
-        """Test the has_license method"""
+        """Test the has_license method."""
         client = GithubOrgClient("google")
         self.assertEqual(client.has_license(repo, license_key), expected)
