@@ -29,8 +29,6 @@ class TestGithubOrgClient(unittest.TestCase):
             f"https://api.github.com/orgs/{org_name}"
         )
 
-
-
 class TestPublicRepos(unittest.TestCase):
     """TestCase for public_repos method"""
 
@@ -57,7 +55,6 @@ class TestPublicRepos(unittest.TestCase):
             self.assertEqual(result, ["repo1", "repo2", "repo3"])
             mock_url.assert_called_once()
             mock_get_json.assert_called_once()
-
 
 class TestPublicReposWithLicense(unittest.TestCase):
     """TestCase for public_repos with license filter"""

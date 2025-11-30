@@ -16,7 +16,12 @@ class GithubOrgClient:
 
     @property
     def org(self) -> Dict:
-        """Retrieve organization data from GitHub."""
+        """
+        Retrieve organization information from GitHub.
+
+        Returns:
+            Dict: A dictionary containing details about the organization.
+        """
         url = self.ORG_URL.format(org=self._org_name)
         return get_json(url)
 
@@ -26,7 +31,15 @@ class GithubOrgClient:
         return self.org.get("repos_url")
 
     def public_repos(self, license: str = None) -> List[str]:
-        """List public repository names, optionally filtered by license."""
+        """
+        List public repositories for the organization.
+
+        Args:
+            license (str, optional): Filter repositories by license key.
+
+        Returns:
+            List[str]: List of repository names.
+        """
         repos = get_json(self._public_repos_url)
         repo_names = [repo.get("name") for repo in repos]
 
@@ -34,12 +47,22 @@ class GithubOrgClient:
             return repo_names
 
         return [
-            repo.get("name") for repo in repos
+            repo.get("name")
+            for repo in repos
             if self.has_license(repo, license)
         ]
 
     @staticmethod
     def has_license(repo: Dict, license_key: str) -> bool:
-        """Check if a repository has a specific license key."""
+        """
+        Check whether a repository has a specific license key.
+
+        Args:
+            repo (Dict): The repository metadata.
+            license_key (str): The license key to filter by.
+
+        Returns:
+            bool: True if the repo license matches the key.
+        """
         repo_license = repo.get("license", {}).get("key")
         return repo_license == license_key
