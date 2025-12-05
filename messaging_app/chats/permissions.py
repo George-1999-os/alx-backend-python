@@ -1,35 +1,22 @@
-from rest_framework.permissions import BasePermission
+from rest_framework import permissions
 
-
-class IsParticipantOfConversation(BasePermission):
+class IsOwnerOrParticipant(permissions.BasePermission):
     """
-    Allows only authenticated users who are participants of the conversation
-    to send (POST), view (GET/HEAD), update (PUT/PATCH) or delete (DELETE) messages.
+    Allow access only if user is the sender, receiver,
+    or a participant of the conversation or message.
     """
-
-    message = "You are not allowed to access this conversation."
-
-    def has_permission(self, request, view):
-        # Require authentication (checker MUST see this exact string)
-        if not request.user.is_authenticated:
-            return False
-
-        # Checker expects to see PUT, PATCH, DELETE in this file
-        # (even if not used directly, we reference them here)
-        allowed_methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-
-        if request.method not in allowed_methods:
-            return False
-
-        return True
 
     def has_object_permission(self, request, view, obj):
-        """
-        Ensure the user is a participant in the conversation.
-        The checker requires explicit access control logic tied to conversation participants.
-        """
-        # Determine conversation based on whether object is Message or Conversation
-        conversation = getattr(obj, "conversation", obj)
+        # Sender owns the message
+        if hasattr(obj, "sender") and obj.sender == request.user:
+            return True
 
-        # Allow only if user belongs to conversation participants
-        return request.user in conversation.participants.all()
+        # Receiver owns the message
+        if hasattr(obj, "receiver") and obj.receiver == request.user:
+            return True
+
+        # User is part of conversation participants
+        if hasattr(obj, "participants") and request.user in obj.participants.all():
+            return True
+
+        return False
