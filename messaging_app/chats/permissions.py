@@ -7,16 +7,10 @@ class IsOwnerOrParticipant(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        # Sender owns the message
         if hasattr(obj, "sender") and obj.sender == request.user:
             return True
-
-        # Receiver owns the message
         if hasattr(obj, "receiver") and obj.receiver == request.user:
             return True
-
-        # User is part of conversation participants
         if hasattr(obj, "participants") and request.user in obj.participants.all():
             return True
-
         return False
