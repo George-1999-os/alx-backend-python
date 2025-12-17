@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Unit tests for client.GithubOrgClient"""
+"""Unit tests for client.GithubOrgClient module"""
 
 import unittest
-from unittest.mock import patch
 from parameterized import parameterized
+from unittest.mock import patch
+
 from client import GithubOrgClient
 
 
@@ -16,7 +17,7 @@ class TestGithubOrgClient(unittest.TestCase):
     ])
     @patch("client.get_json")
     def test_org(self, org_name, mock_get_json):
-        """Test that org returns correct value"""
+        """Test that GithubOrgClient.org returns correct value"""
         expected = {"login": org_name}
         mock_get_json.return_value = expected
 
@@ -25,5 +26,5 @@ class TestGithubOrgClient(unittest.TestCase):
 
         self.assertEqual(result, expected)
         mock_get_json.assert_called_once_with(
-            "https://api.github.com/orgs/{}".format(org_name)
+            f"https://api.github.com/orgs/{org_name}"
         )
