@@ -20,13 +20,12 @@ def get_json(url: str) -> dict:
 
 
 def memoize(method):
-    """Decorator to cache a method result"""
+    """Decorator to cache a method result as a property."""
     attr_name = "_{}".format(method.__name__)
 
-    @property
     def wrapper(self):
         if not hasattr(self, attr_name):
             setattr(self, attr_name, method(self))
         return getattr(self, attr_name)
 
-    return wrapper
+    return property(wrapper)
