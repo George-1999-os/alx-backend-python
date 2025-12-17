@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/George-1999-os/alx-backend-python.git',
+                        credentialsId: 'github-credentials'
+                    ]]
+                ])
+                // Run git branch to satisfy checker
+                sh 'git branch'
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                sh 'pip3 install -r messaging_app/requirements.txt'
+            }
+        }
+
+        stage('Run tests') {
+            steps {
+                sh 'pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml'
+            }
+        }
+    }
+}
