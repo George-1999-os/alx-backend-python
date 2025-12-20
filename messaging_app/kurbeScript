@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # kurbeScript - Set up and verify a local Kubernetes cluster using Minikube
 
