@@ -1,11 +1,17 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# Script to extract Pokémon data and format it
 
-# Parse Pokémon data
-JSON_FILE="pokemon_data/pikachu.json"
+JSON_FILE="pikachu.json"
 
-NAME=$(jq -r '.name' "$JSON_FILE" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
+# Extract name, type, height, weight
+NAME=$(jq -r '.name' "$JSON_FILE" | sed 's/.*/\u&/')  # Capitalize first letter
+TYPE=$(jq -r '.types[0].type.name' "$JSON_FILE" | sed 's/.*/\u&/')  # Capitalize
 HEIGHT=$(jq -r '.height' "$JSON_FILE")
 WEIGHT=$(jq -r '.weight' "$JSON_FILE")
-TYPE=$(jq -r '.types[0].type.name' "$JSON_FILE" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
 
-echo "$NAME is of type $TYPE, weighs ${WEIGHT}kg, and is ${HEIGHT}m tall."
+# Convert height from decimeters to meters, weight from hectograms to kg
+HEIGHT_M=$(awk "BEGIN {printf \"%.1f\", $HEIGHT/10}")
+WEIGHT_KG=$(awk "BEGIN {printf \"%d\", $WEIGHT/10}")
+
+# Print in human-readable format
+echo "$NAME is of type $TYPE, weighs ${WEIGHT_KG}kg, and is ${HEIGHT_M}m tall."
