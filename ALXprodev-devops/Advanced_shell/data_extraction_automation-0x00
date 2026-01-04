@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+URL="https://pokeapi.co/api/v2/pokemon/pikachu"
+OUTPUT_DIR="pokemon_data"
+OUTPUT_FILE="$OUTPUT_DIR/pikachu.json"
+
+mkdir -p "$OUTPUT_DIR"
+
+HTTP_CODE=$(curl -s -L --ssl-no-revoke -w "%{http_code}" -o "$OUTPUT_FILE" "$URL")
+
+if [ "$HTTP_CODE" -ne 200 ]; then
+    echo "Failed to fetch Pokémon data"
+    exit 1
+fi
