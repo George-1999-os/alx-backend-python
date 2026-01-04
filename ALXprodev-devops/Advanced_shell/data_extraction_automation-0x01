@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+JSON_FILE="pokemon_data/pikachu.json"
+
+name=$(jq -r '.name' "$JSON_FILE")
+height=$(jq -r '.height' "$JSON_FILE")
+weight=$(jq -r '.weight' "$JSON_FILE")
+type=$(jq -r '.types[0].type.name' "$JSON_FILE")
+
+echo "$name $type $weight $height" | \
+awk '{
+  printf "%s is of type %s, weighs %skg, and is %sm tall.\n",
+  toupper(substr($1,1,1)) substr($1,2),
+  toupper(substr($2,1,1)) substr($2,2),
+  $3/10,
+  $4/10
+}'
