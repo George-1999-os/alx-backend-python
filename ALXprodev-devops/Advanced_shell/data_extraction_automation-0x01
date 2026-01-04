@@ -1,17 +1,11 @@
 #!/usr/bin/env bash
 
+# Parse Pokémon data
 JSON_FILE="pokemon_data/pikachu.json"
 
-name=$(jq -r '.name' "$JSON_FILE")
-height=$(jq -r '.height' "$JSON_FILE")
-weight=$(jq -r '.weight' "$JSON_FILE")
-type=$(jq -r '.types[0].type.name' "$JSON_FILE")
+NAME=$(jq -r '.name' "$JSON_FILE" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
+HEIGHT=$(jq -r '.height' "$JSON_FILE")
+WEIGHT=$(jq -r '.weight' "$JSON_FILE")
+TYPE=$(jq -r '.types[0].type.name' "$JSON_FILE" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
 
-echo "$name $type $weight $height" | \
-awk '{
-  printf "%s is of type %s, weighs %skg, and is %sm tall.\n",
-  toupper(substr($1,1,1)) substr($1,2),
-  toupper(substr($2,1,1)) substr($2,2),
-  $3/10,
-  $4/10
-}'
+echo "$NAME is of type $TYPE, weighs ${WEIGHT}kg, and is ${HEIGHT}m tall."
